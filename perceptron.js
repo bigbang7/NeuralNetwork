@@ -1,47 +1,49 @@
-//                  Algorithm
-//1. por cada input multiplicar el input por su weight
-//2. sumar las multiplicaciones
-//3. computar el output del perceptron basada en la suma anterior mediante la funcion activadora
 
-// The activation Function
-function sign(n){
-  if(n >= 0){
-    return 1;
-  }else{
-    return -1 ;
+function Perceptron(n, c) {
+  // Array de pesos
+  this.weights = new Array(n);
+  // inicializo los pesos aleatoriamente
+  for (var i = 0; i < this.weights.length; i++) {
+    this.weights[i] = random(-1,1);
+  }
+  this.lr = c; // learning rate/constant
+}
+
+
+// funcion para entrenar al perceptron
+// los pesos se adjustan al valor deseado
+// prototype agrega metodos o una propiedad a un objeto, fuera del objeto
+Perceptron.prototype.train = function(inputs, desired) {
+  // conjetura el resultado
+  var guess = this.feedforward(inputs);
+  // computa un factor nuevo utilizando el error
+  // Error = desired output - guessed output
+  // Error solo puede ser 0, 2, -2
+  // Multiplica por el learning Rate
+  var error = desired - guess;
+  // Adjust weights based on weightChange * input
+  for (var i = 0; i < this.weights.length; i++) {
+    this.weights[i] += this.lr * error * inputs[i];
   }
 }
 
-function Perceptron() {
-  //Learning rate
-  var lr=0.05;
+// Guess -1 or 1 based on input values
+Perceptron.prototype.feedforward = function(inputs) {
+  // Sum all values
+  var sum = 0;
+  for (var i = 0; i < this.weights.length; i++) {
+    sum += inputs[i] * this.weights[i];
+  }
+  // Result is sign of the sum, -1 or 1
+  return this.activate(sum);
+}
 
-  //array de weight para los inputs
-  var weight= new Array(2);
+Perceptron.prototype.activate = function(sum) {
+  if (sum > 0) return 1;
+  else return -1;
+}
 
-  //inicio los weight random
-    for(var i = 0; i < weight.length; i++){
-      weight[i]= random(-1,1);
-    }
-
-    this.guess = function(inputs) {
-      var sum=0;
-      for (var i = 0; i < weight.length; i++) {
-        sum += inputs[i] * weight[i];
-      }
-      var output= sign(sum);
-      return output;
-    }
-
-    this.train = function(inputs, target){
-      var guess = this.guess(inputs);
-      var error = target - guess;
-
-      //ajustar todos los weight
-      for (var i = 0; i < this.weight.length; i++) {
-        this.weight[i] += this.error * inputs[i] * this.lr;
-      }
-
-    }
-
+// Return weights
+Perceptron.prototype.getWeights = function() {
+  return this.weights;
 }
